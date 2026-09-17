@@ -6,8 +6,8 @@ TARGETS = camera take_u_turn take_stop take_turn_left take_turn_right
 
 all: $(TARGETS)
 
-camera: camera.cpp
-	$(CXX) $(CXXFLAGS) camera.cpp -o camera $(LIBS)
+camera: scripts/camera.cpp
+	$(CXX) $(CXXFLAGS) scripts/camera.cpp -o camera $(LIBS)
 
 take_u_turn: scripts/take_u_turn.cpp
 	$(CXX) $(CXXFLAGS) scripts/take_u_turn.cpp -o take_u_turn $(LIBS)
