@@ -4,24 +4,31 @@ Dokumen perencanaan dan alur kerja pengembangan model deteksi rambu (Sign Detect
 
 ## Status Dataset saat Ini
 
-Dataset pengumpulan sampel dari 4 kelas rambu telah berhasil dikumpulkan dengan rincian:
+Dataset pengumpulan sampel dari 4 kelas rambu telah disimpan pada struktur `result/raw/`:
 
-| Kelas Rambu | Folder Sumber | Jumlah Gambar | Class ID |
-| :--- | :--- | :---: | :---: |
-| u_turn | result/u_turn/ | 316 gambar | 0 |
-| stop | result/stop/ | 323 gambar | 1 |
-| turn_left | result/turn_left/ | 316 gambar | 2 |
-| turn_right | result/turn_right/ | 322 gambar | 3 |
-| **TOTAL** | | **1.277 gambar** | |
+| Kelas Rambu | Folder Sumber Gambar | Target Label (.txt) | Jumlah Gambar | Class ID |
+| :--- | :--- | :--- | :---: | :---: |
+| u_turn | result/raw/u_turn/ | result/label/u_turn/ | 316 gambar | 0 |
+| stop | result/raw/stop/ | result/label/stop/ | 323 gambar | 1 |
+| turn_left | result/raw/turn_left/ | result/label/turn_left/ | 316 gambar | 2 |
+| turn_right | result/raw/turn_right/ | result/label/turn_right/ | 322 gambar | 3 |
+| **TOTAL** | | | **1.277 gambar** | |
 
 ---
 
 ## Tahap 1: Anotasi Otomatis (Auto-Labeling)
 
-Membuat script Python `scripts/auto_label.py` menggunakan OpenCV contour detection untuk mendeteksi kontur objek rambu secara otomatis pada seluruh 1.277 gambar di `result/`.
+Membuat script Python di `scripts/labeling/` untuk mendeteksi kontur/bounding box objek rambu secara otomatis pada seluruh 1.277 gambar di `result/raw/`.
 
-- Output: File anotasi `.txt` format YOLO pada tiap gambar:
-  `<class_id> <x_center> <y_center> <width> <height>` (normalized 0.0 - 1.0).
+Struktur script anotasi:
+- `scripts/labeling/label_u_turn.py`
+- `scripts/labeling/label_stop.py`
+- `scripts/labeling/label_turn_left.py`
+- `scripts/labeling/label_turn_right.py`
+- `scripts/labeling/auto_label.py`
+
+Output: File anotasi `.txt` format YOLO pada `result/label/<class_name>/`:
+`<class_id> <x_center> <y_center> <width> <height>` (normalized 0.0 - 1.0).
 
 ---
 

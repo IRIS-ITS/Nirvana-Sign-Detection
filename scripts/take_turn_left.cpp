@@ -7,7 +7,7 @@ namespace fs = std::filesystem;
 
 int main() {
     const std::string className = "turn_left";
-    const std::string saveDir = "result/" + className;
+    const std::string saveDir = "result/raw/" + className;
     int cameraID = 2; // Ganti indeks kamera di sini jika perlu (cth: 0, 1, 2)
 
     try {
