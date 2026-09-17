@@ -48,12 +48,13 @@ pip install -r requirements.txt
    make
    ```
 
-2. Jalankan executable pengambil dataset sesuai kebutuhan:
+2. Jalankan executable pengambil dataset atau pendeteksi real-time sesuai kebutuhan:
    ```bash
    ./take_u_turn     # Pengumpulan sampel U-Turn ke result/raw/u_turn/
    ./take_stop       # Pengumpulan sampel STOP ke result/raw/stop/
    ./take_turn_left  # Pengumpulan sampel Belok Kiri ke result/raw/turn_left/
    ./take_turn_right # Pengumpulan sampel Belok Kanan ke result/raw/turn_right/
+   ./detect          # Pendeteksi rambu real-time (menggunakan best.onnx)
    ```
 
 Untuk petunjuk teknis pengoperasian script, penggunaan tombol keyboard, dan pengaturan indeks kamera, silakan baca dokumentasi teknis pada [scripts/README.md](scripts/README.md).

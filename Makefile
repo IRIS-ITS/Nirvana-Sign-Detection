@@ -2,7 +2,7 @@ CXX = g++
 CXXFLAGS = -std=c++17 $(shell pkg-config --cflags opencv4)
 LIBS = $(shell pkg-config --libs opencv4)
 
-TARGETS = camera take_u_turn take_stop take_turn_left take_turn_right
+TARGETS = camera take_u_turn take_stop take_turn_left take_turn_right detect
 
 all: $(TARGETS)
 
@@ -20,6 +20,9 @@ take_turn_left: scripts/take_turn_left.cpp
 
 take_turn_right: scripts/take_turn_right.cpp
 	$(CXX) $(CXXFLAGS) scripts/take_turn_right.cpp -o take_turn_right $(LIBS)
+
+detect: scripts/detect.cpp
+	$(CXX) $(CXXFLAGS) scripts/detect.cpp -o detect $(LIBS)
 
 clean:
 	rm -f $(TARGETS)

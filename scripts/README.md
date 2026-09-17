@@ -68,3 +68,25 @@ source nirvana.venv/bin/activate
 # Jalankan script auto-labeling utama
 python scripts/labeling/auto_label.py
 ```
+
+---
+
+## 3. Script C++ Real-Time Inference (`scripts/detect.cpp`)
+
+Script C++ untuk melakukan deteksi rambu lalu lintas secara real-time pada feed webcam menggunakan OpenCV DNN dan model `best.onnx`:
+
+- **detect.cpp**
+  - Memuat file model `best.onnx` pada direktori root project.
+  - Mengakses webcam via OpenCV VideoCapture (`int cameraID = 2;`).
+  - Parsing tensor output YOLOv8 `[1, 8, 8400]` dan menerapkan Non-Maximum Suppression (NMS).
+  - Menggambar bounding box berwarna, label kelas (`u_turn`, `stop`, `turn_left`, `turn_right`), confidence score, serta perhitungan FPS.
+
+### Kompilasi dan Eksekusi
+
+```bash
+# Kompilasi via Makefile
+make detect
+
+# Jalankan pendeteksi real-time (pastikan file best.onnx sudah ada di root folder)
+./detect
+```
