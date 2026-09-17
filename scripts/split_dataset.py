@@ -17,6 +17,10 @@ def split_dataset(
     train_lbl_dir = os.path.join(output_dir, "labels", "train")
     val_lbl_dir = os.path.join(output_dir, "labels", "val")
 
+    # Clean existing dataset directory to remove old labels and images
+    if os.path.exists(output_dir):
+        shutil.rmtree(output_dir)
+
     for d in [train_img_dir, val_img_dir, train_lbl_dir, val_lbl_dir]:
         os.makedirs(d, exist_ok=True)
 

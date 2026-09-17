@@ -1,6 +1,7 @@
 path: /home/brenandacaesa/ROBOT/SignDetection/dataset
 train: images/train
 val: images/val
+
 nc: 4
 names:
   0: u_turn
