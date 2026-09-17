@@ -16,9 +16,9 @@ Dataset pengumpulan sampel dari 4 kelas rambu telah disimpan pada struktur `resu
 
 ---
 
-## Tahap 1: Anotasi Otomatis (Auto-Labeling)
+## Tahap 1: Anotasi Otomatis (Auto-Labeling) - SELESAI
 
-Membuat script Python di `scripts/labeling/` untuk mendeteksi kontur/bounding box objek rambu secara otomatis pada seluruh 1.277 gambar di `result/raw/`.
+Telah dibuat script Python di `scripts/labeling/` untuk mendeteksi kontur/bounding box objek rambu secara otomatis pada seluruh 1.277 gambar di `result/raw/`.
 
 Struktur script anotasi:
 - `scripts/labeling/label_u_turn.py`
@@ -27,39 +27,38 @@ Struktur script anotasi:
 - `scripts/labeling/label_turn_right.py`
 - `scripts/labeling/auto_label.py`
 
-Output: File anotasi `.txt` format YOLO pada `result/label/<class_name>/`:
-`<class_id> <x_center> <y_center> <width> <height>` (normalized 0.0 - 1.0).
+Output: 1.277 file anotasi `.txt` format YOLO pada `result/label/<class_name>/`.
 
 ---
 
-## Tahap 2: Pembagian Dataset (Split Train/Val)
+## Tahap 2: Pembagian Dataset (Split Train/Val) - SELESAI
 
-Membagi dataset secara otomatis dengan rasio 80% data latihan (Train) dan 20% data validasi (Validation).
+Dataset telah dibagi secara otomatis dengan rasio 80% Train (1.019 gambar) dan 20% Validation (258 gambar) menggunakan script `scripts/split_dataset.py`.
 
 Struktur folder output `dataset/`:
-```text
-dataset/
-├── images/
-│   ├── train/  (~1.020 gambar)
-│   └── val/    (~257 gambar)
-├── labels/
-│   ├── train/  (~1.020 file .txt)
-│   └── val/    (~257 file .txt)
-└── data.yaml
-```
+- `dataset/images/train/` (1.019 gambar)
+- `dataset/images/val/` (258 gambar)
+- `dataset/labels/train/` (1.019 file .txt)
+- `dataset/labels/val/` (258 file .txt)
+- `dataset/data.yaml`
 
-Konfigurasi `data.yaml`:
+Konfigurasi `dataset/data.yaml`:
 ```yaml
 path: ./dataset
 train: images/train
 val: images/val
+
 nc: 4
-names: ['u_turn', 'stop', 'turn_left', 'turn_right']
+names:
+  0: u_turn
+  1: stop
+  2: turn_left
+  3: turn_right
 ```
 
 ---
 
-## Tahap 3: Pelatihan Model YOLOv8
+## Tahap 3: Pelatihan Model YOLOv8 - TAHAP BERIKUTNYA
 
 Menggunakan arsitektur ringan **YOLOv8n (Nano)** untuk efisiensi dan kecepatan eksekusi pada perangkat robot.
 
