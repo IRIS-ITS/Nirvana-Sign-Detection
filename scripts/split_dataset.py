@@ -64,9 +64,10 @@ def split_dataset(
 
         print(f"{cls}: {len(train_files)} train, {len(val_files)} val")
 
-    # Generate data.yaml configuration file for YOLOv8
+    # Generate data.yaml configuration file using absolute path
+    abs_output_dir = os.path.abspath(output_dir)
     yaml_path = os.path.join(output_dir, "data.yaml")
-    yaml_content = f"""path: ./dataset
+    yaml_content = f"""path: {abs_output_dir}
 train: images/train
 val: images/val
 

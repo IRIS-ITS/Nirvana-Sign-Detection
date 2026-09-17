@@ -10,16 +10,27 @@ def train_sign_model(
     project="runs/detect",
     name="sign_detection"
 ):
-    if not os.path.exists(data_yaml):
-        print(f"Error: {data_yaml} not found.")
+    abs_yaml_path = os.path.abspath(data_yaml)
+    dataset_dir = os.path.dirname(abs_yaml_path)
+
+    if not os.path.exists(abs_yaml_path):
+        print(f"Error: {abs_yaml_path} not found.")
         return
 
-    print("Loading YOLOv8n model...")
+    # Ensure path field in data.yaml points to absolute dataset path
+    with open(abs_yaml_path, "r") as f:
+        data_config = yaml.safe_load(f)
+
+    data_config["path"] = dataset_dir
+    with open(abs_yaml_path, "w") as f:
+        yaml.dump(data_config, f, sort_keys=False)
+
+    print(f"Loading YOLOv8n model...")
     model = YOLO("yolov8n.pt")
 
-    print(f"Starting training on {data_yaml} for {epochs} epochs...")
+    print(f"Starting training on {abs_yaml_path} for {epochs} epochs...")
     results = model.train(
-        data=data_yaml,
+        data=abs_yaml_path,
         epochs=epochs,
         imgsz=imgsz,
         batch=batch,
