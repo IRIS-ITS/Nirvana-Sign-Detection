@@ -12,10 +12,12 @@ Project ini dirancang untuk mendeteksi 4 jenis kelas rambu:
 
 ## Struktur Direktori
 
-- **scripts/**: Berisi source code C++ untuk akuisisi dataset via webcam (`camera.cpp`, `take_u_turn.cpp`, `take_stop.cpp`, `take_turn_left.cpp`, `take_turn_right.cpp`).
+- **scripts/**: Berisi source code C++ untuk akuisisi dataset via webcam dan sub-direktori `scripts/labeling/` untuk script auto-labeling Python.
 - **example/**: Folder penyimpanan sampel gambar umum pengujian.
-- **result/**: Folder penyimpanan dataset yang dikelompokkan berdasarkan kelas rambu (`u_turn/`, `stop/`, `turn_left/`, `turn_right/`).
-- **dataset/**: Folder penampung dataset yang sudah diformat untuk pelatihan model.
+- **result/**: Folder penampung data hasil akuisisi yang terbagi menjadi:
+  - `result/raw/`: Tempat tersimpannya gambar mentah hasil akuisisi kamera per kelas.
+  - `result/label/`: Tempat tersimpannya file anotasi `.txt` format YOLO hasil auto-labeling.
+- **dataset/**: Folder penampung dataset yang sudah diformat untuk pelatihan model (split train/val).
 - **notebooks/**: Folder jupyter notebook untuk eksperimen dan pelatihan model.
 - **docs/**: Dokumentasi tambahan project (`PLAN.md`).
 - **requirements.txt**: Daftar dependensi modul Python untuk ekosistem pelatihan dan pemrosesan dataset.
@@ -23,7 +25,7 @@ Project ini dirancang untuk mendeteksi 4 jenis kelas rambu:
 
 ## Panduan Pengaturan Lingkungan Python
 
-Pastikan untuk membuat file .venv agar package terisolasi
+Pastikan untuk membuat file virtual environment agar package terisolasi:
 
 ```bash
 python3 -m venv nirvana.venv --system-site-packages
@@ -48,10 +50,10 @@ pip install -r requirements.txt
 
 2. Jalankan executable pengambil dataset sesuai kebutuhan:
    ```bash
-   ./take_u_turn     # Pengumpulan sampel U-Turn
-   ./take_stop       # Pengumpulan sampel STOP
-   ./take_turn_left  # Pengumpulan sampel Belok Kiri
-   ./take_turn_right # Pengumpulan sampel Belok Kanan
+   ./take_u_turn     # Pengumpulan sampel U-Turn ke result/raw/u_turn/
+   ./take_stop       # Pengumpulan sampel STOP ke result/raw/stop/
+   ./take_turn_left  # Pengumpulan sampel Belok Kiri ke result/raw/turn_left/
+   ./take_turn_right # Pengumpulan sampel Belok Kanan ke result/raw/turn_right/
    ```
 
 Untuk petunjuk teknis pengoperasian script, penggunaan tombol keyboard, dan pengaturan indeks kamera, silakan baca dokumentasi teknis pada [scripts/README.md](scripts/README.md).
