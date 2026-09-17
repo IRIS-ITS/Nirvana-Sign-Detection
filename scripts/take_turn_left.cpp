@@ -8,6 +8,7 @@ namespace fs = std::filesystem;
 int main() {
     const std::string className = "turn_left";
     const std::string saveDir = "result/" + className;
+    int cameraID = 2; // Ganti indeks kamera di sini jika perlu (cth: 0, 1, 2)
 
     try {
         fs::create_directories(saveDir);
@@ -21,11 +22,9 @@ int main() {
         imgIndex++;
     }
 
-    cv::VideoCapture cap(0);
-    if (!cap.isOpened()) cap.open(2);
-    if (!cap.isOpened()) cap.open(1);
+    cv::VideoCapture cap(cameraID);
     if (!cap.isOpened()) {
-        std::cerr << "Error: Camera not found." << std::endl;
+        std::cerr << "Error: Cannot open camera " << cameraID << std::endl;
         return -1;
     }
 
