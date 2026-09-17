@@ -68,12 +68,18 @@ int main() {
         std::vector<cv::Mat> outputs;
         net.forward(outputs, net.getUnconnectedOutLayersNames());
 
-        // YOLOv8 output tensor shape: [1, 8, 8400] -> reshape to [8, 8400]
-        cv::Mat outMat = outputs[0];
-        if (outMat.dims == 3) {
-            outMat = outMat.reshape(1, outMat.size[1]); // Shape [8, 8400]
+        // Parse YOLOv8 ONNX output tensor (shape [1, 8, 8400])
+        int channels = 8;
+        int numAnchors = 8400;
+        if (outputs[0].dims == 3) {
+            channels = outputs[0].size[1];
+            numAnchors = outputs[0].size[2];
         }
-        cv::transpose(outMat, outMat); // Shape [8400, 8]
+
+        // Construct 2D Mat [channels, numAnchors] directly from raw float pointer
+        cv::Mat output2D(channels, numAnchors, CV_32F, (float*)outputs[0].data);
+        cv::Mat outMat;
+        cv::transpose(output2D, outMat); // Shape [8400, 8]
 
         std::vector<int> classIds;
         std::vector<float> confidences;
