@@ -15,3 +15,9 @@ __pycache__/
 **/__pycache__/
 *.py[cod]
 *$py.class
+*.cache
+
+# YOLO training runs & downloaded weights
+runs/
+notebooks/runs/
+*.pt
