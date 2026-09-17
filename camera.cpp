@@ -23,8 +23,8 @@ int main() {
         imgIndex++;
     }
 
-    // Open default webcam (device 0)
-    cv::VideoCapture cap(0);
+    // change cap by 0,1 or 2 based on webcam index, if you have multiple cameras connected to your computer
+    cv::VideoCapture cap(2);
     if (!cap.isOpened()) {
         std::cerr << "Error: Could not open camera (index 0). Please check camera connection." << std::endl;
         return -1;
