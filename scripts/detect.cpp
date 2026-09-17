@@ -65,19 +65,18 @@ int main() {
         net.setInput(blob);
 
         // Forward pass
-        std::vector<cv::Mat> outputs;
-        net.forward(outputs, net.getUnconnectedOutLayersNames());
+        cv::Mat rawOutput = net.forward();
 
         // Parse YOLOv8 ONNX output tensor (shape [1, 8, 8400])
         int channels = 8;
         int numAnchors = 8400;
-        if (outputs[0].dims == 3) {
-            channels = outputs[0].size[1];
-            numAnchors = outputs[0].size[2];
+        if (rawOutput.dims == 3) {
+            channels = rawOutput.size[1];
+            numAnchors = rawOutput.size[2];
         }
 
         // Construct 2D Mat [channels, numAnchors] directly from raw float pointer
-        cv::Mat output2D(channels, numAnchors, CV_32F, (float*)outputs[0].data);
+        cv::Mat output2D(channels, numAnchors, CV_32F, (float*)rawOutput.data);
         cv::Mat outMat;
         cv::transpose(output2D, outMat); // Shape [8400, 8]
 
