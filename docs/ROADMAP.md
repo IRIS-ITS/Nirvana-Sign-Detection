@@ -40,7 +40,7 @@ Tujuan: model kenal objek jauh/kecil/miring + background kosong.
    nirvana.venv/bin/python scripts/labeling/auto_label.py
    ```
 
-## Phase 3 — Split robust ⬜
+## Phase 3 — Split robust ✅ (1778 train / 452 val, bg 146/37, commit 4585c48+61d1d6e)
 File: `scripts/split_dataset.py`, output `dataset/` + `dataset/data.yaml`.
 1. Hapus `rmtree` brutal → rebuild aman; validasi tiap pasangan
    (img ada + txt ada + isi 5 kolom + nilai 0-1); dukung `.txt` kosong
