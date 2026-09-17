@@ -1,4 +1,4 @@
-path: /home/brenandacaesa/ROBOT/SignDetection/dataset
+path: ./dataset
 train: images/train
 val: images/val
 
