@@ -12,8 +12,6 @@ struct Detection {
 
 int main() {
     int cameraID = 2;
-    std::string modelPath = "best.onnx";
-
     std::vector<std::string> classNames = {"u_turn", "stop", "turn_left", "turn_right"};
     std::vector<cv::Scalar> colors = {
         cv::Scalar(255, 255, 0),   // u_turn: Cyan
@@ -22,10 +20,16 @@ int main() {
         cv::Scalar(0, 255, 0)      // turn_right: Green
     };
 
+    std::string modelPath = "models/best.onnx";
     cv::dnn::Net net = cv::dnn::readNetFromONNX(modelPath);
     if (net.empty()) {
-        std::cerr << "Error: Could not load ONNX model from path: " << modelPath << std::endl;
-        std::cerr << "Please ensure best.onnx is downloaded and placed in the project root." << std::endl;
+        modelPath = "best.onnx";
+        net = cv::dnn::readNetFromONNX(modelPath);
+    }
+
+    if (net.empty()) {
+        std::cerr << "Error: Could not load ONNX model from models/best.onnx or best.onnx" << std::endl;
+        std::cerr << "Please ensure best.onnx is downloaded and placed in models/ or the project root." << std::endl;
         return -1;
     }
 
