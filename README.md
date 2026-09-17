@@ -26,7 +26,7 @@ Project ini dirancang untuk mendeteksi 4 jenis kelas rambu:
 Pastikan untuk membuat file .venv agar package terisolasi
 
 ```bash
-python3 -m venv nivana.venv --system-site-packages
+python3 -m venv nirvana.venv --system-site-packages
 ```
 
 Untuk mengaktifkan virtual environment `nirvana.venv` dan menginstal seluruh modul yang dibutuhkan:
