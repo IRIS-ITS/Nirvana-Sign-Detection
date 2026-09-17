@@ -4,6 +4,7 @@ take_stop
 take_turn_left
 take_turn_right
 take_u_turn
+take_background
 detect
 
 # Python Virtual Environment

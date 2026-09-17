@@ -4,7 +4,7 @@ import onnx
 from onnx import numpy_helper
 import numpy as np
 
-def fix_onnx_for_opencv(onnx_path="best.onnx"):
+def fix_onnx_for_opencv(onnx_path="../models/best.onnx"):
     if not os.path.exists(onnx_path):
         print(f"Error: {onnx_path} not found.")
         return False
@@ -32,5 +32,5 @@ def fix_onnx_for_opencv(onnx_path="best.onnx"):
     return True
 
 if __name__ == "__main__":
-    target = sys.argv[1] if len(sys.argv) > 1 else "best.onnx"
+    target = sys.argv[1] if len(sys.argv) > 1 else "../models/best.onnx"
     fix_onnx_for_opencv(target)

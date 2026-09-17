@@ -1,0 +1,115 @@
+#include <iostream>
+#include <string>
+#include <filesystem>
+#include <fstream>
+#include <opencv2/opencv.hpp>
+
+namespace fs = std::filesystem;
+
+// Capture gambar BACKGROUND (tanpa rambu): meja, lantai, tembok, koridor.
+// Setiap gambar otomatis dibuatkan label .txt KOSONG (format YOLO background)
+// di result/label/background/ agar ikut tersalin saat split_dataset.
+int main() {
+    const std::string className = "background";
+    const std::string saveDir = "result/raw/" + className;
+    const std::string labelDir = "result/label/" + className;
+    int cameraID = 2; // Ganti indeks kamera di sini jika perlu (cth: 0, 1, 2)
+
+    try {
+        fs::create_directories(saveDir);
+        fs::create_directories(labelDir);
+    } catch (const std::exception& e) {
+        std::cerr << "Failed to create directory: " << e.what() << std::endl;
+        return -1;
+    }
+
+    int imgIndex = 1;
+    while (fs::exists(saveDir + "/" + className + std::to_string(imgIndex) + ".jpg")) {
+        imgIndex++;
+    }
+
+    cv::VideoCapture cap(cameraID);
+    if (!cap.isOpened()) {
+        std::cerr << "Error: Cannot open camera " << cameraID << std::endl;
+        return -1;
+    }
+
+    cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+
+    std::cout << "Class: BACKGROUND (no sign) | Path: " << saveDir << std::endl;
+    std::cout << "'s': save | 'SPACE': auto-record | 'q': quit" << std::endl;
+    std::cout << "PENTING: pastikan TIDAK ada rambu di dalam frame!" << std::endl;
+
+    cv::Mat frame;
+    bool isAutoRecording = false;
+    std::string statusText = "";
+    int statusTimer = 0;
+    int sessionSaved = 0;
+
+    while (true) {
+        cap >> frame;
+        if (frame.empty()) break;
+
+        if (frame.cols != 640 || frame.rows != 480) {
+            cv::resize(frame, frame, cv::Size(640, 480));
+        }
+
+        cv::Mat displayFrame = frame.clone();
+
+        cv::putText(displayFrame, "Class: BACKGROUND - NO SIGN (640x480)", cv::Point(15, 30),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.65, cv::Scalar(255, 255, 255), 2);
+        cv::putText(displayFrame, "'s': Save | 'SPACE': Auto REC | 'q': Quit", cv::Point(15, 55),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.55, cv::Scalar(0, 255, 255), 1);
+
+        auto saveCurrent = [&]() {
+            std::string base = className + std::to_string(imgIndex);
+            if (cv::imwrite(saveDir + "/" + base + ".jpg", frame)) {
+                std::ofstream txt(labelDir + "/" + base + ".txt"); // empty = background
+                txt.close();
+                std::cout << "Saved " << base << ".jpg (+ empty .txt)" << std::endl;
+                statusText = "Saved: " + base + ".jpg";
+                imgIndex++;
+                return true;
+            }
+            std::cerr << "Failed to save " << base << std::endl;
+            statusText = "Save failed";
+            return false;
+        };
+
+        if (isAutoRecording) {
+            if (saveCurrent()) sessionSaved++;
+            cv::circle(displayFrame, cv::Point(610, 30), 8, cv::Scalar(0, 0, 255), -1);
+            cv::putText(displayFrame, "REC (" + std::to_string(sessionSaved) + ")", cv::Point(510, 35),
+                        cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 0, 255), 2);
+        } else if (statusTimer > 0) {
+            cv::putText(displayFrame, statusText, cv::Point(15, 85),
+                        cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 255, 0), 2);
+            statusTimer--;
+        }
+
+        cv::imshow("Capture - BACKGROUND", displayFrame);
+
+        int key = cv::waitKey(30);
+        if (key == 's' || key == 'S') {
+            saveCurrent();
+            statusTimer = 30;
+        } else if (key == 32) {
+            isAutoRecording = !isAutoRecording;
+            if (isAutoRecording) {
+                sessionSaved = 0;
+                std::cout << "Auto-recording started..." << std::endl;
+            } else {
+                std::cout << "Auto-recording stopped. Saved " << sessionSaved << " images." << std::endl;
+                statusText = "REC Stopped (" + std::to_string(sessionSaved) + " saved)";
+                statusTimer = 45;
+            }
+        } else if (key == 'q' || key == 'Q' || key == 27) {
+            break;
+        }
+    }
+
+    cap.release();
+    cv::destroyAllWindows();
+    return 0;
+}

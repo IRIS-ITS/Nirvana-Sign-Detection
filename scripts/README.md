@@ -16,6 +16,8 @@ Daftar executable dan target direktori gambar mentah:
    - Mengambil sampel rambu Belok Kiri dan menyimpannya ke `result/raw/turn_left/`.
 5. **take_turn_right.cpp**
    - Mengambil sampel rambu Belok Kanan dan menyimpannya ke `result/raw/turn_right/`.
+6. **take_background.cpp**
+   - Mengambil sampel background TANPA rambu (meja, lantai, tembok, koridor) ke `result/raw/background/` dan otomatis membuat label `.txt` kosong ke `result/label/background/` (format YOLO background/negatif).
 
 ### Konfigurasi Indeks Kamera
 
@@ -38,6 +40,7 @@ g++ -std=c++17 scripts/take_u_turn.cpp -o take_u_turn $(pkg-config --cflags --li
 g++ -std=c++17 scripts/take_stop.cpp -o take_stop $(pkg-config --cflags --libs opencv4)
 g++ -std=c++17 scripts/take_turn_left.cpp -o take_turn_left $(pkg-config --cflags --libs opencv4)
 g++ -std=c++17 scripts/take_turn_right.cpp -o take_turn_right $(pkg-config --cflags --libs opencv4)
+g++ -std=c++17 scripts/take_background.cpp -o take_background $(pkg-config --cflags --libs opencv4)
 ```
 
 ### Kontrol Pengoperasian C++
