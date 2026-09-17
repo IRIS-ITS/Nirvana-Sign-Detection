@@ -1,0 +1,10 @@
+path: ./dataset
+train: images/train
+val: images/val
+
+nc: 4
+names:
+  0: u_turn
+  1: stop
+  2: turn_left
+  3: turn_right
