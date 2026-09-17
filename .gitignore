@@ -1,11 +1,17 @@
-# binary results
+# Binary executables
 camera
 take_stop
 take_turn_left
 take_turn_right
 take_u_turn
 
-# Ignore .venv and Python cache
-nirvana.venv
+# Python Virtual Environment
+nirvana.venv/
+.venv/
+env/
+
+# Python Cache & Compiled Files
 __pycache__/
-*.pyc
+**/__pycache__/
+*.py[cod]
+*$py.class
