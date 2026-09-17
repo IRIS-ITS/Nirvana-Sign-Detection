@@ -7,9 +7,9 @@ namespace fs = std::filesystem;
 
 int main() {
     // Output directory path
-    std::string saveDir = "result/example";
+    std::string saveDir = "example";
     
-    // Automatically create directory result/example if it doesn't exist
+    // Automatically create directory example if it doesn't exist
     try {
         fs::create_directories(saveDir);
     } catch (const std::exception& e) {
