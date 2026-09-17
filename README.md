@@ -17,10 +17,23 @@ Project ini dirancang untuk mendeteksi 4 jenis kelas rambu:
 - **result/**: Folder penyimpanan dataset yang dikelompokkan berdasarkan kelas rambu (`u_turn/`, `stop/`, `turn_left/`, `turn_right/`).
 - **dataset/**: Folder penampung dataset yang sudah diformat untuk pelatihan model.
 - **notebooks/**: Folder jupyter notebook untuk eksperimen dan pelatihan model.
-- **docs/**: Dokumentasi tambahan project.
+- **docs/**: Dokumentasi tambahan project (`PLAN.md`).
+- **requirements.txt**: Daftar dependensi modul Python untuk ekosistem pelatihan dan pemrosesan dataset.
 - **Makefile**: File otomasi kompilasi seluruh source code C++.
 
-## Panduan Ringkas
+## Panduan Pengaturan Lingkungan Python
+
+Untuk mengaktifkan virtual environment `nirvana.venv` dan menginstal seluruh modul yang dibutuhkan:
+
+```bash
+# Mengaktifkan virtual environment
+source nirvana.venv/bin/activate
+
+# Menginstal dependensi Python
+pip install -r requirements.txt
+```
+
+## Panduan Kompilasi & Pengoperasian C++
 
 1. Kompilasi seluruh program:
    ```bash
