@@ -44,8 +44,8 @@ int main() {
     std::cout << "Camera initialized on ID " << cameraID << ". Press 'q' or ESC to exit." << std::endl;
 
     cv::Mat frame;
-    float confThreshold = 0.45f;
-    float nmsThreshold = 0.50f;
+    float confThreshold = 0.60f;
+    float nmsThreshold = 0.45f;
 
     double prevTime = cv::getTickCount();
 
