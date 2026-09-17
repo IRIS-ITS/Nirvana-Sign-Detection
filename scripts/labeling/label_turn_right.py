@@ -18,35 +18,36 @@ def label_turn_right(raw_dir="result/raw/turn_right", label_dir="result/label/tu
             continue
 
         h, w = img.shape[:2]
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
-        lower_blue = np.array([85, 35, 35])
-        upper_blue = np.array([135, 255, 255])
-        mask = cv2.inRange(hsv, lower_blue, upper_blue)
-
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        # Detect outer diamond sign board first
+        _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+        contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         best_box = None
         max_area = 0
 
         for cnt in contours:
             area = cv2.contourArea(cnt)
-            if area > 1500 and area > max_area:
-                bx, by, bw, bh = cv2.boundingRect(cnt)
-                max_area = area
-                best_box = (bx, by, bw, bh)
+            bx, by, bw, bh = cv2.boundingRect(cnt)
+            if bw < 0.95 * w and bh < 0.95 * h and area > 2000:
+                aspect_ratio = bw / float(bh)
+                if 0.5 < aspect_ratio < 2.0 and area > max_area:
+                    max_area = area
+                    best_box = (bx, by, bw, bh)
 
+        # Fallback to blue color mask if thresholding didn't get outer board
         if best_box is None:
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-            contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+            lower_blue = np.array([85, 35, 35])
+            upper_blue = np.array([135, 255, 255])
+            mask = cv2.inRange(hsv, lower_blue, upper_blue)
+            contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             for cnt in contours:
                 area = cv2.contourArea(cnt)
-                if area > 3000 and area > max_area:
-                    bx, by, bw, bh = cv2.boundingRect(cnt)
+                bx, by, bw, bh = cv2.boundingRect(cnt)
+                if bw < 0.95 * w and bh < 0.95 * h and area > 1000 and area > max_area:
                     max_area = area
                     best_box = (bx, by, bw, bh)
 

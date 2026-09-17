@@ -22,15 +22,16 @@ def label_u_turn(raw_dir="result/raw/u_turn", label_dir="result/label/u_turn", c
         blurred = cv2.GaussianBlur(gray, (5, 5), 0)
 
         _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
-        contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
         best_box = None
         max_area = 0
 
         for cnt in contours:
             area = cv2.contourArea(cnt)
-            if area > 3000:
-                bx, by, bw, bh = cv2.boundingRect(cnt)
+            bx, by, bw, bh = cv2.boundingRect(cnt)
+            # Filter out full screen frame border
+            if bw < 0.95 * w and bh < 0.95 * h and area > 2000:
                 aspect_ratio = bw / float(bh)
                 if 0.5 < aspect_ratio < 2.0 and area > max_area:
                     max_area = area
@@ -39,11 +40,11 @@ def label_u_turn(raw_dir="result/raw/u_turn", label_dir="result/label/u_turn", c
         if best_box is None:
             adaptive = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
                                              cv2.THRESH_BINARY_INV, 11, 2)
-            contours, _ = cv2.findContours(adaptive, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, _ = cv2.findContours(adaptive, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             for cnt in contours:
                 area = cv2.contourArea(cnt)
-                if area > 3000 and area > max_area:
-                    bx, by, bw, bh = cv2.boundingRect(cnt)
+                bx, by, bw, bh = cv2.boundingRect(cnt)
+                if bw < 0.95 * w and bh < 0.95 * h and area > 2000 and area > max_area:
                     max_area = area
                     best_box = (bx, by, bw, bh)
 

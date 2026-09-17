@@ -5,5 +5,7 @@ take_turn_left
 take_turn_right
 take_u_turn
 
-# Ignore .venv
+# Ignore .venv and Python cache
 nirvana.venv
+__pycache__/
+*.pyc
