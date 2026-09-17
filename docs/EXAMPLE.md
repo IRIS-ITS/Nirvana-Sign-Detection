@@ -19,8 +19,8 @@ Dokumen ini berisi sampel visualisasi koordinat bounding box format YOLO yang di
 
 - File Sumber: `result/raw/stop/stop1.jpg`
 - File Label: `result/label/stop/stop1.txt`
-- Koordinat YOLO Baru: `1 0.572656 0.513542 0.129688 0.281250`
-- Ukuran Bounding Box: **12.9% Lebar x 28.1% Tinggi** (Sebelumnya: 67.5% x 84.3%)
+- Koordinat YOLO Baru: `1 0.507031 0.509375 0.529687 0.289583`
+- Ukuran Bounding Box: **52.9% Lebar x 28.9% Tinggi** (Penggabungan huruf S-T-O-P secara utuh!)
 
 ![Visualisasi Bounding Box STOP](previews/preview_stop1.jpg)
 

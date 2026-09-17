@@ -18,41 +18,55 @@ def label_stop(raw_dir="result/raw/stop", label_dir="result/label/stop", class_i
             continue
 
         h, w = img.shape[:2]
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+
+        _, thresh = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+
+        # Dilation kernel to connect individual letters S-T-O-P into a single unified bounding box
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 9))
+        dilated = cv2.dilate(thresh, kernel, iterations=2)
+
+        contours, _ = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+
         best_box = None
         max_area = 0
 
-        # Method 1: HSV Red color segmentation for STOP sign octagon
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        mask1 = cv2.inRange(hsv, np.array([0, 70, 50]), np.array([10, 255, 255]))
-        mask2 = cv2.inRange(hsv, np.array([160, 70, 50]), np.array([180, 255, 255]))
-        mask = cv2.bitwise_or(mask1, mask2)
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for cnt in contours:
             area = cv2.contourArea(cnt)
             bx, by, bw, bh = cv2.boundingRect(cnt)
-            if 0.05 * w < bw < 0.60 * w and 0.05 * h < bh < 0.60 * h and area > 300:
-                aspect_ratio = bw / float(bh)
-                if 0.5 < aspect_ratio < 2.0 and area > max_area:
+            if 0.10 * w < bw < 0.85 * w and 0.08 * h < bh < 0.70 * h and area > 500:
+                aspect = bw / float(bh)
+                if 0.5 < aspect < 5.0 and area > max_area:
                     max_area = area
                     best_box = (bx, by, bw, bh)
 
-        # Method 2: Fallback to adaptive thresholding if red mask was insufficient
+        # Method 2: Combine bounding boxes of individual detected letters (S, T, O, P)
         if best_box is None:
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-            thresh = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
-            contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-            for cnt in contours:
+            contours_raw, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            letter_boxes = []
+            for cnt in contours_raw:
                 area = cv2.contourArea(cnt)
                 bx, by, bw, bh = cv2.boundingRect(cnt)
-                if 0.08 * w < bw < 0.60 * w and 0.08 * h < bh < 0.60 * h and area > 500:
-                    aspect_ratio = bw / float(bh)
-                    if 0.4 < aspect_ratio < 2.2 and area > max_area:
-                        max_area = area
-                        best_box = (bx, by, bw, bh)
+                if 0.03 * w < bw < 0.40 * w and 0.08 * h < bh < 0.60 * h and area > 150:
+                    letter_boxes.append((bx, by, bw, bh))
+            if letter_boxes:
+                min_x = min(b[0] for b in letter_boxes)
+                min_y = min(b[1] for b in letter_boxes)
+                max_x = max(b[0] + b[2] for b in letter_boxes)
+                max_y = max(b[1] + b[3] for b in letter_boxes)
+                best_box = (min_x, min_y, max_x - min_x, max_y - min_y)
+
+        # Method 3: Fallback to adaptive thresholding
+        if best_box is None:
+            thresh_adapt = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+            contours_adapt, _ = cv2.findContours(thresh_adapt, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+            for cnt in contours_adapt:
+                area = cv2.contourArea(cnt)
+                bx, by, bw, bh = cv2.boundingRect(cnt)
+                if 0.08 * w < bw < 0.60 * w and 0.08 * h < bh < 0.60 * h and area > max_area:
+                    max_area = area
+                    best_box = (bx, by, bw, bh)
 
         if best_box is not None:
             bx, by, bw, bh = best_box
