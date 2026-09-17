@@ -18,44 +18,41 @@ def label_stop(raw_dir="result/raw/stop", label_dir="result/label/stop", class_i
             continue
 
         h, w = img.shape[:2]
-        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-
-        lower_red1 = np.array([0, 50, 50])
-        upper_red1 = np.array([12, 255, 255])
-        lower_red2 = np.array([165, 50, 50])
-        upper_red2 = np.array([180, 255, 255])
-
-        mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
-        mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
-        mask = cv2.bitwise_or(mask1, mask2)
-
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
-        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
-
-        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
         best_box = None
         max_area = 0
 
+        # Method 1: HSV Red color segmentation for STOP sign octagon
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        mask1 = cv2.inRange(hsv, np.array([0, 70, 50]), np.array([10, 255, 255]))
+        mask2 = cv2.inRange(hsv, np.array([160, 70, 50]), np.array([180, 255, 255]))
+        mask = cv2.bitwise_or(mask1, mask2)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+        mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+
+        contours, _ = cv2.findContours(mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         for cnt in contours:
             area = cv2.contourArea(cnt)
             bx, by, bw, bh = cv2.boundingRect(cnt)
-            if bw < 0.95 * w and bh < 0.95 * h and area > 1500 and area > max_area:
+            if 0.05 * w < bw < 0.60 * w and 0.05 * h < bh < 0.60 * h and area > 300:
                 aspect_ratio = bw / float(bh)
-                if 0.6 < aspect_ratio < 1.6:
+                if 0.5 < aspect_ratio < 2.0 and area > max_area:
                     max_area = area
                     best_box = (bx, by, bw, bh)
 
+        # Method 2: Fallback to adaptive thresholding if red mask was insufficient
         if best_box is None:
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+            blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+            thresh = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
             contours, _ = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
             for cnt in contours:
                 area = cv2.contourArea(cnt)
                 bx, by, bw, bh = cv2.boundingRect(cnt)
-                if bw < 0.95 * w and bh < 0.95 * h and area > 2000 and area > max_area:
-                    max_area = area
-                    best_box = (bx, by, bw, bh)
+                if 0.08 * w < bw < 0.60 * w and 0.08 * h < bh < 0.60 * h and area > 500:
+                    aspect_ratio = bw / float(bh)
+                    if 0.4 < aspect_ratio < 2.2 and area > max_area:
+                        max_area = area
+                        best_box = (bx, by, bw, bh)
 
         if best_box is not None:
             bx, by, bw, bh = best_box

@@ -1,6 +1,6 @@
 # Bounding Box Labeling Verification
 
-Dokumen ini berisi sampel visualisasi koordinat bounding box format YOLO yang digambar secara presisi untuk 1 sampel dari masing-masing kelas rambu.
+Dokumen ini berisi sampel visualisasi koordinat bounding box format YOLO yang digambar secara presisi untuk 1 sampel dari masing-masing kelas rambu setelah refactoring auto-labeling presisi.
 
 ---
 
@@ -8,7 +8,8 @@ Dokumen ini berisi sampel visualisasi koordinat bounding box format YOLO yang di
 
 - File Sumber: `result/raw/u_turn/u_turn1.jpg`
 - File Label: `result/label/u_turn/u_turn1.txt`
-- Koordinat YOLO: `0 0.539062 0.532292 0.628125 0.843750`
+- Koordinat YOLO Baru: `0 0.540625 0.500000 0.287500 0.412500`
+- Ukuran Bounding Box: **28.7% Lebar x 41.2% Tinggi** (Sebelumnya: 62.8% x 84.3%)
 
 ![Visualisasi Bounding Box U-Turn](previews/preview_u_turn1.jpg)
 
@@ -18,7 +19,8 @@ Dokumen ini berisi sampel visualisasi koordinat bounding box format YOLO yang di
 
 - File Sumber: `result/raw/stop/stop1.jpg`
 - File Label: `result/label/stop/stop1.txt`
-- Koordinat YOLO: `1 0.507812 0.532292 0.675000 0.843750`
+- Koordinat YOLO Baru: `1 0.572656 0.513542 0.129688 0.281250`
+- Ukuran Bounding Box: **12.9% Lebar x 28.1% Tinggi** (Sebelumnya: 67.5% x 84.3%)
 
 ![Visualisasi Bounding Box STOP](previews/preview_stop1.jpg)
 
@@ -28,7 +30,8 @@ Dokumen ini berisi sampel visualisasi koordinat bounding box format YOLO yang di
 
 - File Sumber: `result/raw/turn_left/turn_left1.jpg`
 - File Label: `result/label/turn_left/turn_left1.txt`
-- Koordinat YOLO: `2 0.467969 0.512500 0.551562 0.720833`
+- Koordinat YOLO Baru: `2 0.472656 0.502083 0.248438 0.333333`
+- Ukuran Bounding Box: **24.8% Lebar x 33.3% Tinggi** (Sebelumnya: 55.1% x 72.0%)
 
 ![Visualisasi Bounding Box Turn Left](previews/preview_turn_left1.jpg)
 
@@ -38,6 +41,7 @@ Dokumen ini berisi sampel visualisasi koordinat bounding box format YOLO yang di
 
 - File Sumber: `result/raw/turn_right/turn_right1.jpg`
 - File Label: `result/label/turn_right/turn_right1.txt`
-- Koordinat YOLO: `3 0.497656 0.531250 0.573438 0.754167`
+- Koordinat YOLO Baru: `3 0.492969 0.519792 0.257812 0.347917`
+- Ukuran Bounding Box: **25.7% Lebar x 34.7% Tinggi** (Sebelumnya: 57.3% x 75.4%)
 
 ![Visualisasi Bounding Box Turn Right](previews/preview_turn_right1.jpg)
