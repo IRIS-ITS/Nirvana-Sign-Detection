@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 struct Detection {
     int class_id;
@@ -45,11 +46,16 @@ int main() {
 
     cap.set(cv::CAP_PROP_FRAME_WIDTH, 640);
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-    std::cout << "Camera initialized on ID " << cameraID << ". Press 'q' or ESC to exit." << std::endl;
+    std::cout << "Camera initialized on ID " << cameraID << "." << std::endl;
+    std::cout << "Controls:" << std::endl;
+    std::cout << "  '+' / '=' : Increase bounding box scale" << std::endl;
+    std::cout << "  '-' / '_' : Decrease bounding box scale" << std::endl;
+    std::cout << "  'q' / ESC : Exit program" << std::endl;
 
     cv::Mat frame;
-    float confThreshold = 0.60f;
+    float confThreshold = 0.65f;
     float nmsThreshold = 0.45f;
+    float boxScale = 0.50f; // Scale factor for tight bounding box display (default 50%)
 
     double prevTime = cv::getTickCount();
 
@@ -110,10 +116,14 @@ int main() {
             }
 
             if (maxScore >= confThreshold) {
-                int left = static_cast<int>((cx - 0.5f * w) * scaleX);
-                int top = static_cast<int>((cy - 0.5f * h) * scaleY);
-                int width = static_cast<int>(w * scaleX);
-                int height = static_cast<int>(h * scaleY);
+                // Apply visual boxScale multiplier to tightly fit bounding box
+                float scaledW = w * boxScale;
+                float scaledH = h * boxScale;
+
+                int left = static_cast<int>((cx - 0.5f * scaledW) * scaleX);
+                int top = static_cast<int>((cy - 0.5f * scaledH) * scaleY);
+                int width = static_cast<int>(scaledW * scaleX);
+                int height = static_cast<int>(scaledH * scaleY);
 
                 // Boundary check
                 left = std::max(0, std::min(left, frameW - 1));
@@ -157,14 +167,14 @@ int main() {
                         cv::FONT_HERSHEY_SIMPLEX, 0.6, cv::Scalar(0, 0, 0), 2);
         }
 
-        // Calculate and display FPS
+        // Calculate and display FPS and Box Scale
         double currentTime = cv::getTickCount();
         double fps = cv::getTickFrequency() / (currentTime - prevTime);
         prevTime = currentTime;
 
-        std::string fpsText = cv::format("FPS: %.1f", fps);
-        cv::putText(frame, fpsText, cv::Point(15, 35),
-                    cv::FONT_HERSHEY_SIMPLEX, 0.8, cv::Scalar(0, 255, 0), 2);
+        std::string overlayText = cv::format("FPS: %.1f | Box Scale: %.2fx (+/-)", fps, boxScale);
+        cv::putText(frame, overlayText, cv::Point(15, 35),
+                    cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(0, 255, 0), 2);
 
         cv::imshow("Sign Detection - OpenCV DNN (YOLOv8)", frame);
 
@@ -172,6 +182,12 @@ int main() {
         if (key == 'q' || key == 'Q' || key == 27) { // 27 = ESC
             std::cout << "Exiting sign detection..." << std::endl;
             break;
+        } else if (key == '+' || key == '=') {
+            boxScale = std::min(1.50f, boxScale + 0.05f);
+            std::cout << "Increased Box Scale to: " << cv::format("%.2f", boxScale) << std::endl;
+        } else if (key == '-' || key == '_') {
+            boxScale = std::max(0.15f, boxScale - 0.05f);
+            std::cout << "Decreased Box Scale to: " << cv::format("%.2f", boxScale) << std::endl;
         }
     }
 
