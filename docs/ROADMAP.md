@@ -63,7 +63,12 @@ File: `notebooks/01_Training_Sign.ipynb`. Output: `runs/detect/sign_detection/`.
 3. Gate: `mAP50 >0.90` DAN cek visual `val/predict` box tight full-papan.
    Kalau di Python masih lebar → data belum beres, jangan export.
 
-## Phase 5 — Export + validasi ONNX ⬜
+## Phase 5 — Export + validasi ONNX ✅ (retrain 100 epoch Colab; `models/best.onnx` commit 19da4a7 + Sub-fix di bawah)
+- Temuan kritis: OpenCV 5.x DNN membalik `Sub(const, tensor)` jadi `tensor-const`
+  (terbukti via unit test terisolasi) → box se-frame walau skor benar.
+  `fix_onnx_opencv.py` kini menulis ulang Sub tsb jadi `Add(const, Neg(tensor))`
+  + cek ekuivalen ORT (diff 0.0). Paritas ORT vs DNN: box identik.
+- Spot-check val via ONNX: meanIoU 0.823, 0 salah kelas; background maxconf 0.002.
 File: `scripts/fix_onnx_opencv.py`. Output: `models/best.onnx` (satu sumber).
 1. `export format=onnx, imgsz=640, opset=12, simplify=True`.
 2. Perkuat `fix_onnx`: verifikasi output before/after patch via onnxruntime
@@ -71,7 +76,10 @@ File: `scripts/fix_onnx_opencv.py`. Output: `models/best.onnx` (satu sumber).
 3. Hapus duplikat `best.onnx` di root; `detect.cpp` hanya load satu path.
 4. Paritas ulang ORT vs OpenCV DNN (acuan Phase 0: `dw<5px, ds<0.05`).
 
-## Phase 6 — Fix `detect.cpp` ⬜
+## Phase 6 — Fix `detect.cpp` ✅ (letterbox + inverse mapping + mode `--image`)
+- Validasi end-to-end binary C++ di 113 val: meanIoU 0.969, p10 0.947,
+  0 salah kelas, 0 miss. Filter area >85% SENGAJA tidak dipasang: box
+  close-up legit mencapai 92%x100%, filter akan membunuh deteksi dekat.
 File: `scripts/detect.cpp` (fungsi: `:69` blob, `:92-93` scale, `:120-123` clamp).
 1. Ganti stretch → **letterbox** (`r=min(640/W,640/H)`, pad 114) persis training.
 2. Scale balik inverse-letterbox: `x=(cx-pad_x)/r`, `w=w_pred/r` → ke frame.

@@ -81,8 +81,16 @@ Script C++ untuk melakukan deteksi rambu lalu lintas secara real-time pada feed 
 - **detect.cpp**
   - Memuat file model `best.onnx` pada direktori root project.
   - Mengakses webcam via OpenCV VideoCapture (`int cameraID = 2;`).
+  - Preprocessing **letterbox** 640x640 (jaga aspek + pad abu-abu, sama seperti training) + inverse-letterbox untuk petakan box ke frame — bukan stretch resize.
   - Parsing tensor output YOLOv8 `[1, 8, 8400]` dan menerapkan Non-Maximum Suppression (NMS).
-  - Menggambar bounding box berwarna, label kelas (`u_turn`, `stop`, `turn_left`, `turn_right`), confidence score, serta perhitungan FPS.
+  - Menggambar bounding box berwarna, label kelas (`u_turn`, `stop`, `turn_left`, `turn_right`), confidence score, ukuran box (% frame), serta perhitungan FPS.
+  - Mode headless untuk validasi tanpa kamera: `./detect --image <path> [--save out.jpg]`.
+
+### Catatan kompatibilitas ONNX (penting)
+- OpenCV 5.x DNN membalik input `Sub(const, tensor)` → box meledak se-frame walau skor benar. `scripts/fix_onnx_opencv.py` menulis ulang Sub tersebut jadi `Add(const, Neg(tensor))` + verifikasi ekuivalen (maxabsdiff 0.0). Wajib dijalankan ulang setiap terima `best.onnx` baru dari Colab:
+  ```bash
+  nirvana.venv/bin/python scripts/fix_onnx_opencv.py models/best.onnx
+  ```
 
 ### Kompilasi dan Eksekusi
 
