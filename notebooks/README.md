@@ -1,5 +1,8 @@
 # Training Notebook (`notebooks/`)
 
+name : Brenanda Caesa Pamudya
+email : brenandapamudya178@gmail.com
+
 ## Isi
 
 - **01_Training_Sign.ipynb** — Alur lengkap training YOLOv8n (4 kelas rambu, label full-papan): setup → resolve `dataset/data.yaml` → load `yolov8n.pt` → train → val + gate → export ONNX + patch OpenCV → download artifacts.
