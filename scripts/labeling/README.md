@@ -1,7 +1,11 @@
 # Auto-Labeling Rambu (`scripts/labeling/`)
 
-name : Brenanda Caesa Pamudya
+## Author
+
+name : Brenanda Caesa Pamudya  
 email : brenandapamudya178@gmail.com
+
+---
 
 Membuat anotasi bounding box `.txt` format YOLO secara otomatis dari `result/raw/<kelas>/` ke `result/label/<kelas>/`.
 

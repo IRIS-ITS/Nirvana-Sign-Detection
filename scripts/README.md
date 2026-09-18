@@ -1,7 +1,11 @@
 # Technical Documentation: Dataset Scripts & Auto-Labeling
 
-name : Brenanda Caesa Pamudya
+## Author
+
+name : Brenanda Caesa Pamudya  
 email : brenandapamudya178@gmail.com
+
+---
 
 Folder ini berisi source code C++ menggunakan OpenCV untuk pengumpulan sampel dataset gambar rambu/sign dengan resolusi 640x480, serta modul Python untuk anotasi otomatis.
 

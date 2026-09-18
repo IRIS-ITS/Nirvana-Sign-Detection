@@ -1,7 +1,11 @@
 # Nirvana Sign Detection
 
-name : Brenanda Caesa Pamudya
+## Author
+
+name : Brenanda Caesa Pamudya  
 email : brenandapamudya178@gmail.com
+
+---
 
 Repository untuk pengumpulan dataset dan pengembangan model deteksi rambu (Sign Detection) berbasis C++ dan OpenCV.
 
