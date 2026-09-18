@@ -23,3 +23,6 @@ __pycache__/
 runs/
 notebooks/runs/
 *.pt
+
+# Local docs & previews (kept locally, not pushed)
+docs/
