@@ -54,13 +54,12 @@ Saat program sedang berjalan pada feed kamera:
 
 ## 2. Script Auto-Labeling Python (`scripts/labeling/`)
 
-Sub-direktori `scripts/labeling/` berisi script Python untuk membuat file anotasi bounding box `.txt` format YOLO secara otomatis:
+Sub-direktori `scripts/labeling/` berisi script Python untuk membuat file anotasi bounding box `.txt` format YOLO secara otomatis. Target anotasi adalah **full papan rambu** (wajik penuh / oktagon penuh), bukan simbol di dalamnya:
 
-- **label_u_turn.py**: Membaca gambar dari `result/raw/u_turn/` dan menyimpan file `.txt` ke `result/label/u_turn/`.
-- **label_stop.py**: Membaca gambar dari `result/raw/stop/` dan menyimpan file `.txt` ke `result/label/stop/`.
-- **label_turn_left.py**: Membaca gambar dari `result/raw/turn_left/` dan menyimpan file `.txt` ke `result/label/turn_left/`.
-- **label_turn_right.py**: Membaca gambar dari `result/raw/turn_right/` dan menyimpan file `.txt` ke `result/label/turn_right/`.
-- **auto_label.py**: Script utama untuk menjalankan keempat proses anotasi otomatis sekaligus.
+- **board_utils.py**: Detektor papan bersama (Canny quad + white-fill untuk wajik, mask merah HSV + oktagon untuk STOP) dengan gerbang QC (solidity/aspek/luas) + guard tiny-box. Gambar yang gagal semua QC di-REJECT (tanpa `.txt`, lebih aman dari label palsu).
+- **label_u_turn.py / label_stop.py / label_turn_left.py / label_turn_right.py**: Wrapper tipis per kelas.
+- **auto_label.py**: Script utama untuk menjalankan keempat proses anotasi otomatis sekaligus + ringkasan OK/REJECT.
+- Background (`result/raw/background/`) tidak lewat auto-label: `.txt` kosong dibuat otomatis oleh `take_background`.
 
 ### Cara Penggunaan Script Labeling
 
@@ -79,7 +78,7 @@ python scripts/labeling/auto_label.py
 Script C++ untuk melakukan deteksi rambu lalu lintas secara real-time pada feed webcam menggunakan OpenCV DNN dan model `best.onnx`:
 
 - **detect.cpp**
-  - Memuat file model `best.onnx` pada direktori root project.
+  - Memuat `models/best.onnx` (fallback `best.onnx` di root project).
   - Mengakses webcam via OpenCV VideoCapture (`int cameraID = 2;`).
   - Preprocessing **letterbox** 640x640 (jaga aspek + pad abu-abu, sama seperti training) + inverse-letterbox untuk petakan box ke frame — bukan stretch resize.
   - Parsing tensor output YOLOv8 `[1, 8, 8400]` dan menerapkan Non-Maximum Suppression (NMS).
@@ -98,6 +97,19 @@ Script C++ untuk melakukan deteksi rambu lalu lintas secara real-time pada feed 
 # Kompilasi via Makefile
 make detect
 
-# Jalankan pendeteksi real-time (pastikan file best.onnx sudah ada di root folder)
+# Jalankan pendeteksi real-time (pastikan models/best.onnx sudah ada)
 ./detect
+
+# Validasi tanpa kamera (gambar statis)
+./detect --image example/example1.jpg --save /tmp/out.jpg
+```
+
+---
+
+## 4. Split Dataset (`scripts/split_dataset.py`)
+
+Membagi `result/raw` + `result/label` menjadi `dataset/images/{train,val}` dan `dataset/labels/{train,val}` (stratifikasi luas box 80/20, termasuk kelas `background` berlabel kosong), plus validasi tiap pasangan dan `dataset/data.yaml` ber-path relatif:
+
+```bash
+nirvana.venv/bin/python scripts/split_dataset.py
 ```
